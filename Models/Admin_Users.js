@@ -6,19 +6,23 @@ const UsersAdminShema = mongoose.Schema({
         type:String,
         default:"ROOT User"
     },
-
-    passWord:{
+    password:{
         type:String,
         default:""
     },
-
-    
     email:{
         type:String,
         required:true,
         unique:true,
     },
-    
+    socketId:{
+        type:String,
+        required:true
+    },
+    isActive:{
+        type:Boolean,
+        required:true
+    }
 });
 
 module.exports = mongoose.model("admin", UsersAdminShema);
