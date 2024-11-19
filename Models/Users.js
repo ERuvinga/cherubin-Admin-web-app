@@ -2,12 +2,18 @@
 
 const mongoose = require("mongoose");
 const UsersShema = mongoose.Schema({
-    name :{
+    fname :{
         type:String,
-        default:""
+        default:"",
+        required:true
     },
 
-    registerDate:{
+    lname :{
+        type:String,
+        default:"",
+        required:true
+    },
+    createAt:{
         type:Number,
         default:Date.now()
     },
@@ -17,47 +23,42 @@ const UsersShema = mongoose.Schema({
         default:""
     },
 
-    stateAccount:{
+    isActive:{
         type:Boolean,
         default: false
     },
-
-    typeAccount:{
+    status:{
         type:String,
-        default:"NUser"
+        default:"ACTIVE"
     },
-
-    picture:{
+    socketID:{
         type:String,
-        default:""
+        default:null
     },
-    
-
+    useRole:{
+        type:String,
+        required:true,
+    },
+    cover:{
+        type:String,
+        default:null
+    },
     //Coordo Datas
     email:{
         type:String,
         required:true,
         unique:true,
-        default:"-"
     },
-    
     tel:{
         type:String,
         required:true,
-        unique:true,
-        default:"-"
-    },
-    
-    idOfAdmin:{
-        type:String,
-        default:""
     },
 
-    idCompteur:{
-        type:Number,
-        required: true,
-        unique:true
-    }
+    //Token datas
+    ActivationToken:{
+        type:String,
+        default:null
+    },
 });
 
 module.exports = mongoose.model("User", UsersShema);
