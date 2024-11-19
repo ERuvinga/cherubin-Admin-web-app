@@ -1,7 +1,6 @@
 //Logical Methods for Login and registers routers
-
-//Models
-const modelOfUsers = require("../../Models/Users"); // import model of students user
+// Nodemail configuration
+const nodemailer = require("nodemailer");
 
 //Lib
 require("dotenv").config();
@@ -9,13 +8,59 @@ const bcrypt = require("bcrypt"); // salting password Methode
 const jwt = require("jsonwebtoken");
 const SALTE_PWD = 10;
 
+//Models
+const modelOfUsers = require("../../Models/Users"); // import model of Others user
+const modelOfAdminUsers = require("../../Models/Admin_Users"); // import model of Admin user
+
+//Admin Login Controller
+exports.Adminlogin = (req, res) => {
+    // Checking if email of user is Valid
+    const InAuthorizationMsg = "email ou mot de pass d'utilisateur Incorrect";
+    console.log(req.body);
+    modelOfAdminUsers.findOne({email:req.body.email})
+            .then(userFund =>{
+                if(userFund === null){
+                    res.status(401).json({msg:InAuthorizationMsg}) 
+                }
+                else{
+                    console.log(userFund);
+                        bcrypt.compare(req.body.password, userFund.password)
+                        .then(valid =>{
+                            if(!valid){
+                                res.status(401).json({msg:InAuthorizationMsg})  
+                            }
+
+                            else{
+                                // Creation Token of user
+                            const Token = jwt.sign({
+                                    idUser:userFund._id,
+                                    mail:userFund.email,
+                                },process.env.TOKEN_SIGN);
+                                // respond Client
+                                res.status(200).json({msg:"Utilisateur trouvé", Token, DataUser:userFund, typeAccount:userFund.typeAccount});
+                            }
+                        })
+                        .catch(error => {
+                            console.log(error);
+                            res.status(500).json({msg:"Error Server Token"})
+                        });                    
+                }
+            })
+            .catch(error =>{
+                 console.log(`Error Database ${error}`) // if Error  Connexion to dataBase
+                 res.status(500).json({msg:"Erreur server"}) 
+              });
+};
+
+//Other user Login Controllers
 exports.login = (req, res) => {
+    const InAuthorizationMsg = "email ou mot de pass d'utilisateur Incorrect";
     const messageInactifAccount = "Ce Compte n'est pas encore Activé";
     // cheking type of Account
     modelOfUsers.findOne({$or:[{email:req.body.email},{tel:req.body.email}]})
             .then(userFund =>{
                 if(userFund === null){
-                    res.status(401).json({msg:"Aucun Utilisateur Trouvé avec ces Identités"}) 
+                    res.status(401).json({msg:InAuthorizationMsg}) 
                 }
 
                 else{
@@ -23,10 +68,11 @@ exports.login = (req, res) => {
                         bcrypt.compare(req.body.passWord, userFund.passWord)
                         .then(valid =>{
                             if(!valid){
-                                res.status(401).json({msg:"email, Tel ou mot de pass d'utilisateur Incorrect"})  
+                                res.status(401).json({msg:InAuthorizationMsg})  
                             }
 
                             else{
+                                // Create Token
                             const Token = jwt.sign({
                                     idUser:userFund._id,
                                     mail:userFund.email,
@@ -121,24 +167,46 @@ exports.Activation_account = (req, res) => {
 
 exports.registerNewUser = (req, res) =>{
     const DatasOfForm = req.body;
-    const formData = {
-        name:"Elie Ruvinga",
-        email:"ruvingaelie@gmail.com",
-        tel:"+243973668210"
-    };
+    console.log(DatasOfForm);
+    console.log(process.env.EMAIL_USER);
+    console.log(process.env.EMAIL_PASSWORD);
 
-    const newUser = new modelOfUsers(formData); // created news student with datas of formulaire
+    
+// create Transport of nodemail
+const transport = nodemailer.createTransport({
+    service:'Gmail',
+    auth:{
+        user:process.env.EMAIL_USER,
+        pass:process.env.EMAIL_PASSWORD
+    }
+}) 
+
+    const newUser = new modelOfUsers(DatasOfForm); // created news user with datas of formulaire
     newUser.save() // saving new objet in data base
     .then((datas)=> {
         res.status(200);
         res.json({message: "'success': New User created"});
 
-        // Send a email message to news student, content matricule _id
+            // option of sending mail
+            let mailOptions ={
+                from:process.env.EMAIL_USER,
+                to:DatasOfForm.email,
+                subject:"Creation de compte reussi, Bienvenu sur la plaforme de gestion efficace d'eau",
+                text:`Cher(e) ${DatasOfForm.fname} ${DatasOfForm.lname},Bienvenue chez SMART METER.`,
+            };
+    
+            // Send a email message to user
+            transport.sendMail(mailOptions,(error, infos)=>{
+                if(error){
+                   return console.log(`Error : ${error}`);
+                };
+                console.log(`Message sending ${infos}`)
+            });
         console.log(datas);
     })
     .catch(error =>{
         console.log(error);
         res.status(500);
-        res.json({message: "Error Server"});
+        res.json({msg: "Echec de la creation du compte"});
     });
 };
