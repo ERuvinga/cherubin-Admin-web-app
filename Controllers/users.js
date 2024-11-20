@@ -19,6 +19,8 @@ exports.deleteUser =(req, res)=>{
 
 exports.getAllUsers =(req, res)=>{
 
+    const parameters = req.params;
+    console.log(parameters);
         //search AllStudents in dataBase
         modelOfUsers.find({idOfAdmin: req.Autorization.userId})
         .then(userFund =>{
