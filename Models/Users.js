@@ -43,19 +43,26 @@ const UsersShema = mongoose.Schema({
         type:String,
         default:null
     },
+
     //Coordo Datas
     email:{
         type:String,
-        required:true,
         unique:true,
+        required:true,
     },
     tel:{
         type:String,
+        unique:true,
         required:true,
     },
-
     //Token datas
     ActivationToken:{
+        type:String,
+        default:null
+    },
+
+    //Admin user datas for Appartements
+    adminID:{
         type:String,
         default:null
     },

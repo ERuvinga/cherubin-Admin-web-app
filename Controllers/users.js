@@ -5,11 +5,11 @@ const modelOfUsers = require("../Models/Users"); // import model of students use
 // controller Check Auth user
 exports.deleteUser =(req, res)=>{
         //search user in dataBase
+        console.log(req.params);
         modelOfUsers.deleteOne({_id:req.params.id})
         .then((userFund) =>{
             console.log("user deleted");
             res.status(200).json("user Deleted");
-
         })
         .catch(error =>{
             console.log(error);
@@ -19,8 +19,57 @@ exports.deleteUser =(req, res)=>{
 
 exports.getAllUsers =(req, res)=>{
 
+    //Querry datas
+    const parameters = req.params;
+    const query = req.query;
+
+    //type of Filter datas
+    const status ={
+        ALL:"ALL",
+        ACTIVE:"ACTIVE",
+        DESACTIVE:"DESACTIVE",
+    }
+    
+    //filter datas
+    const filter ={
+        useRole:parameters.useRole
+    }
+
+    // check status filter
+    switch(parameters.status){
+        case status.ACTIVE:{
+            filter.isActive = true;
+            break;
+        };
+        case status.DESACTIVE:{
+            filter.isActive = false;
+            break;
+        };
+        default:{
+            console.log("Return all datas");
+        }
+    }
+    console.log(parameters);
+    console.log(query);
+
+        //if Keyword content value
+        if(query.keyword){
+                modelOfUsers.find(
+                    {$text: {$search: query.keyword, $language: "fr" }}, 
+                    {score: {$meta: "textScore"}}).sort({score:{$meta:"textScore"}})
+                .then(userFund =>{
+                        res.status(200).json({msg:"Tout les utilisateurs du reseau", AllUsers:userFund});
+                    
+                })
+                .catch(error =>{
+                    console.log(error);
+                    res.status(500).json({error});
+                }) 
+            }
+
+        else{
         //search AllStudents in dataBase
-        modelOfUsers.find({idOfAdmin: req.Autorization.userId})
+        modelOfUsers.find(filter)
         .then(userFund =>{
                 res.status(200).json({msg:"Tout les utilisateurs du reseau", AllUsers:userFund});
             
@@ -28,7 +77,9 @@ exports.getAllUsers =(req, res)=>{
         .catch(error =>{
             console.log(error);
             res.status(500).json({error});
-        })        
+        }) 
+        }
+          
 };
 
 

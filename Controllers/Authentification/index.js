@@ -206,7 +206,7 @@ const transport = nodemailer.createTransport({
     })
     .catch(error =>{
         console.log(error);
-        res.status(500);
+        res.status(501);
         res.json({msg: "Echec de la creation du compte"});
     });
 };
