@@ -10,6 +10,7 @@ const testRoute = require('./Routes/test');
 const AuthRoute = require("./Routes/Authentification");
 const CheckAuthUser = require("./Routes/Authentification/Auth");
 const SearchUserRoute = require("./Routes/Users")
+const AppUserRoute = require("./Routes/AppUser")
 const AdminUserRoute = require("./Routes/Admin")
 
 app.use(express.json());
@@ -26,6 +27,7 @@ app.use('/Authentification', AuthRoute);
 
 // userRoutes
 app.use("/Admin",AdminUserRoute);
+app.use("/AppUsers", AppUserRoute);
 app.use("/Users",SearchUserRoute);
 
 
