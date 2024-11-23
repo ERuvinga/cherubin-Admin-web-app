@@ -60,7 +60,10 @@ const UsersShema = mongoose.Schema({
         type:String,
         default:null
     },
-
+    idCounter:{
+        type:String,
+        default:null
+    },
     //Admin user datas for Appartements
     adminID:{
         type:String,
