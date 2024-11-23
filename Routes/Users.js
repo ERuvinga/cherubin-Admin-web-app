@@ -1,10 +1,11 @@
 // Routers for Authentification of users
 const router = require("express").Router();
 const CtrlUser = require("../Controllers/users");
-const CtrlrCheckAutorizationUser = require("../Controllers/Authentification/Autorizations");
 
 router.get("/:useRole/:status", CtrlUser.getAllUsers);
-router.post("/New", CtrlrCheckAutorizationUser.CheckAutorizationUser, CtrlUser.NewUser);
+router.get("/locators", CtrlUser.getLocators);
 router.delete("/Delete/:id", CtrlUser.deleteUser);
+router.post("/logout", CtrlUser.logout);
+router.post("/NewAppart",  CtrlUser.NewAppartement);
 
 module.exports = router;
