@@ -12,6 +12,7 @@ const CheckAuthUser = require("./Routes/Authentification/Auth");
 const SearchUserRoute = require("./Routes/Users")
 const AppUserRoute = require("./Routes/AppUser")
 const AdminUserRoute = require("./Routes/Admin")
+const EspRoute = require("./Routes/Esp")
 
 app.use(express.json());
 app.use((req, res, next) => {
@@ -29,6 +30,7 @@ app.use('/Authentification', AuthRoute);
 app.use("/Admin",AdminUserRoute);
 app.use("/AppUsers", AppUserRoute);
 app.use("/Users",SearchUserRoute);
+app.use("/Esp8266",EspRoute);
 
 
 module.exports = app;

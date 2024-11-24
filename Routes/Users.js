@@ -7,5 +7,6 @@ router.get("/locators", CtrlUser.getLocators);
 router.delete("/Delete/:id", CtrlUser.deleteUser);
 router.post("/logout", CtrlUser.logout);
 router.post("/NewAppart",  CtrlUser.NewAppartement);
+router.post("/NewPayement",  CtrlUser.Payement);
 
 module.exports = router;
