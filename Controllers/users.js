@@ -4,6 +4,8 @@ const nodemailer = require("nodemailer");
 // modelsusers 
 const modelOfUsers = require("../Models/Users"); // import model of Users
 const modelOfCounter = require("../Models/counter"); // import model of Counter
+const modelOfNotification = require("../Models/Notification"); // import model of Notification
+const modelOfHistory = require("../Models/HistoryPayement"); // import model of History
 
 // controller Check Auth user
 exports.deleteUser =(req, res)=>{
@@ -164,7 +166,6 @@ exports.getLocators =(req, res)=>{
           
 };
 
-
 exports.NewAppartement = (req, res) =>{
     const DatasOfForm = req.body;
     console.log(DatasOfForm);
@@ -197,8 +198,8 @@ exports.NewAppartement = (req, res) =>{
                     let mailOptions ={
                         from:process.env.EMAIL_USER,
                         to:DatasOfForm.email,
-                        subject:"Creation de compte reussi, Bienvenu sur la plaforme de gestion efficace d'eau",
-                        text:`Cher(e) ${DatasOfForm.fname} ${DatasOfForm.lname},Bienvenue chez SMART METER.`,
+                        subject:"Création de compte reussi, Bienvenu sur la plaforme de gestion efficace d'eau",
+                        text:`Cher(e) ${DatasOfForm.fname} ${DatasOfForm.lname},la configuration de votre conpteur a été effectuée avec succes chez SMART METER.`,
                     };
 
                         // Send a email message to user
@@ -225,5 +226,60 @@ exports.NewAppartement = (req, res) =>{
         console.log(error);
         res.status(501);
         res.json({msg: "Echec de la creation: email ou tel existant"});
+    });
+};
+
+exports.Payement = (req, res) =>{
+    const DatasOfForm = req.body;
+    console.log(DatasOfForm);
+
+    modelOfCounter.findOne({idCounter:DatasOfForm.idCounter}) // saving new objet in data base
+        .then((Counterdatas)=> {
+            if(Counterdatas){
+                modelOfCounter.updateOne({idCounter:DatasOfForm.idCounter},{
+                    $set:{
+                        counterValue:Counterdatas.counterValue + DatasOfForm.valuePayed,
+                        NewPayemet:true,
+                    }
+                })
+                .then(()=>{
+                    console.log(Counterdatas);
+                    const newNotification = new modelOfNotification({
+                        receiverId:Counterdatas.userId,
+                        userId:Counterdatas.userId,
+                        idCounter:DatasOfForm.idCounter,
+                        message:`Nouvelle recharge de ${DatasOfForm.valuePayed} M3 effectué`
+                    }); // created news user with datas of formulaire
+                        
+                    const newHistory = new modelOfHistory({
+                        valuePayed:DatasOfForm.valuePayed,
+                        clientId:Counterdatas.userId,
+                        DealerId:DatasOfForm.idDealer,
+                        idCounter:DatasOfForm.idCounter,
+                    }); // created news user with datas of formulaire
+
+                    newNotification.save(); // creation Notification
+                    newHistory.save(); // creation Historique
+                    res.status(200);
+                    res.json({message: "'success': payement success"});
+                })
+            
+                .catch((error)=>{
+                    console.log(error);
+                    res.status(500).json({msg:"Echec, Error Server"});
+                })
+            }
+
+            else{
+                console.log("identifiant introuvables");
+                res.status(404);
+                res.json({msg: "Echec: identifiants non trouvés"});
+            }
+            
+    })
+    .catch(error =>{
+        console.log(error);
+        res.status(501);
+        res.json({msg: "Echec payement non effectuer"});
     });
 };

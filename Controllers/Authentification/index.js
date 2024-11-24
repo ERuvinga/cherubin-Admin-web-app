@@ -59,7 +59,6 @@ exports.Adminlogin = (req, res) => {
 exports.login = (req, res) => {
     const InAuthorizationMsg = "email ou mot de pass d'utilisateur Incorrect";
     const messageInactifAccount = "Ce Compte n'est pas encore Activé";
-    console.log("is Here")
 
     // cheking type of Account
     modelOfUsers.findOne({email:req.body.email})
