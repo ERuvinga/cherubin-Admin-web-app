@@ -1,7 +1,7 @@
 //Admin model datas of users
 
 const mongoose = require("mongoose");
-const UsersAdminShema = mongoose.Schema({
+const NotificationShema = mongoose.Schema({
     receiverId:{
         type:String,
         required:true,
@@ -20,4 +20,4 @@ const UsersAdminShema = mongoose.Schema({
     },
 });
 
-module.exports = mongoose.model("notification", UsersAdminShema);
+module.exports = mongoose.model("notification", NotificationShema);

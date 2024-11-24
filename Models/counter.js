@@ -27,13 +27,17 @@ const CounterShema = mongoose.Schema({
     },
     counterValue:{
         type:Number,
-        default:null
+        default:0.0
     },
     speedCounter:{
         type:Number,
-        default:null
+        default:0.0
     },
     isActive:{
+        type:Boolean,
+        default:false
+    },
+    NewPayemet:{
         type:Boolean,
         default:false
     }
