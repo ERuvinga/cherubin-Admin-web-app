@@ -1,5 +1,6 @@
 // nodemailer importing
 const nodemailer = require("nodemailer");
+const mongoose = require("mongoose");
 
 // modelsusers 
 const modelOfUsers = require("../Models/Users"); // import model of Users
@@ -11,21 +12,90 @@ const modelOfHistory = require("../Models/HistoryPayement"); // import model of 
 exports.deleteUser =(req, res)=>{
         //search user in dataBase
         console.log(req.params);
-        modelOfUsers.deleteOne({_id:req.params.id})
-        .then(() =>{
+        modelOfUsers.findOne({_id:req.params.id})
+        .then(userDatas=>{
+            if(userDatas){
+                console.log(userDatas)
+                // search a type of Account
+                switch(userDatas.useRole){
+                    case "ADMIN_PARC":{
+                        console.log("it is Admin");
+                            modelOfUsers.deleteOne({_id:req.params.id})
+                            .then(() =>{
+                    
+                                // delete datas
+                                // 1. delete All notifications
+                                modelOfNotification.deleteMany({AdminId:req.params.id}).then(()=>console.log("notifications of user Admin deleted"))
 
-            // delete counter datas
-            modelOfCounter.deleteOne({userId:req.params.id})
-            .then(datas=>{
-                console.log("user and counter deleted");
-                res.status(200).json("user Deleted");
-            })
-            
+                                // 2. delete All Locators
+                                modelOfUsers.deleteMany({adminID:req.params.id}).then(()=>console.log("Locators of user Admin deleted"))
+
+                                // 3. delete All Counters of Locators
+                                modelOfCounter.deleteMany({AdminId:req.params.id}).then(()=>console.log("Counter of user Admin deleted"))
+                                .then(datas=>{
+                                    console.log(datas);
+                                    console.log("user and all datas of user deleted");
+                                    res.status(200).json("user Deleted");
+                                })
+                                
+                            })
+                            .catch(error =>{
+                                console.log(error);
+                                res.status(500).json({error});
+                            })   
+                        break;
+                    };
+                    case "LOCATOR":{
+                        console.log("it is Locator");
+                        modelOfUsers.deleteOne({_id:req.params.id})
+                        .then(() =>{
+                            // delete counter datas
+                            modelOfNotification.deleteMany({receiverId:req.params.id}).then(()=>console.log("notifications of user deleted"))
+                            modelOfCounter.deleteOne({userId:req.params.id})
+                            .then(()=>{
+                                console.log("Locator deleted");
+                                res.status(200).json("Locator Deleted");
+                            })
+                            
+                        })
+                        .catch(error =>{
+                            console.log(error);
+                            res.status(500).json({error});
+                        }) 
+                        break;
+                    };
+                    case "DEALER":{
+                        console.log("it is Dealer");
+                        modelOfUsers.deleteOne({_id:req.params.id})
+                        .then(() =>{
+                
+                            // delete counter datas
+                            modelOfHistory.deleteMany({DealerId:req.params.id})
+                            .then(()=>{
+                                console.log("Dealer user and History deleted");
+                                res.status(200).json("Dealer Deleted");
+                            })
+                            
+                        })
+                        .catch(error =>{
+                            console.log(error);
+                            res.status(500).json({error});
+                        }) 
+                        break;
+                    };
+
+                }             
+            }
+            else{
+                res.status(404).json({msg:"utilisateur inconu"});
+            }
+           
         })
         .catch(error =>{
             console.log(error);
-            res.status(500).json({error});
-        })        
+            res.status(500).json({msg:"Erreur lors de la suppression"});
+        }) 
+
 };
 
 // controller Check Auth user
@@ -187,6 +257,7 @@ exports.NewAppartement = (req, res) =>{
                 email:DatasOfForm.email,
                 userId:Userdatas._id,
                 idCounter:DatasOfForm.idCounter,
+                AdminId:Userdatas.adminID
             }); // created news user with datas of formulaire
                 
             newCounter.save()
@@ -238,35 +309,58 @@ exports.Payement = (req, res) =>{
             if(Counterdatas){
                 modelOfCounter.updateOne({idCounter:DatasOfForm.idCounter},{
                     $set:{
-                        counterValue:Counterdatas.counterValue + DatasOfForm.valuePayed,
+                        //counterValue:Counterdatas.counterValue + DatasOfForm.valuePayed,
                         NewPayemet:true,
                     }
                 })
                 .then(()=>{
                     console.log(Counterdatas);
-                    const newNotification = new modelOfNotification({
-                        receiverId:Counterdatas.userId,
-                        userId:Counterdatas.userId,
-                        idCounter:DatasOfForm.idCounter,
-                        message:`Nouvelle recharge de ${DatasOfForm.valuePayed} M3 effectué`
-                    }); // created news user with datas of formulaire
+                    modelOfUsers.findOne({_id:Counterdatas.userId})
+                    .then(userDatas=>{
+                        console.log(userDatas);
+                        const ClientId = (new mongoose.Types.ObjectId(Counterdatas.userId));
+                        const AdminId = (new mongoose.Types.ObjectId(userDatas.adminID));
+                        const DealerId = (new mongoose.Types.ObjectId(DatasOfForm.idDealer));
+                        const newNotification_Client = new modelOfNotification({
+                            receiverId:ClientId,
+                            AdminId:userDatas.adminID,
+                            userId:DealerId,
+                            idCounter:DatasOfForm.idCounter,
+                            message:`Cher(e) ${userDatas.fname} ${userDatas.lname}, Une nouvelle recharge de ${DatasOfForm.valuePayed} m3/h vient d'etre effectuer sur votre compteur.`
+                        }); // create new client Notification 
+                            
+                        const newNotification_Admin = new modelOfNotification({
+                            receiverId:AdminId,
+                            AdminId:userDatas.adminID,
+                            userId:DealerId,
+                            idCounter:DatasOfForm.idCounter,
+                            message:`Le client ${userDatas.fname} ${userDatas.lname} vient d'effectuer une nouvelle recharge de ${DatasOfForm.valuePayed} m3/h.`
+                        });
                         
-                    const newHistory = new modelOfHistory({
-                        valuePayed:DatasOfForm.valuePayed,
-                        clientId:Counterdatas.userId,
-                        DealerId:DatasOfForm.idDealer,
-                        idCounter:DatasOfForm.idCounter,
-                    }); // created news user with datas of formulaire
+                        // Create a History datas
+                        const newHistory = new modelOfHistory({
+                            valuePayed:DatasOfForm.valuePayed,
+                            clientId:ClientId,
+                            AdminId:AdminId,
+                            DealerId:DatasOfForm.idDealer,
+                            idCounter:DatasOfForm.idCounter,
+                        }); // created news user with datas of formulaire
+    
+                        newNotification_Client.save(); // creation client Notification
+                        newNotification_Admin.save(); // creation Notification Admin
+                        newHistory.save().catch(error => console.log(error)); // creation Historique
+                        res.status(200);
+                        res.json({message: "'success': payement success"});
 
-                    newNotification.save(); // creation Notification
-                    newHistory.save(); // creation Historique
-                    res.status(200);
-                    res.json({message: "'success': payement success"});
+                    })
+                    .catch(error =>{
+                        console.log(error);
+                    })
                 })
             
                 .catch((error)=>{
                     console.log(error);
-                    res.status(500).json({msg:"Echec, Error Server"});
+                    res.status(500).json({msg:"Echec lors du payement"});
                 })
             }
 
@@ -281,5 +375,73 @@ exports.Payement = (req, res) =>{
         console.log(error);
         res.status(501);
         res.json({msg: "Echec payement non effectuer"});
+    });
+};
+
+
+exports.GetNotification = (req, res) =>{
+    const datasQuerys = req.query;
+    console.log(datasQuerys);
+    const receiveUserId = new mongoose.Types.ObjectId(datasQuerys.userId);
+
+    modelOfNotification.aggregate([{$match:{receiverId:receiveUserId}},{$lookup:{
+        from:"users",
+        localField:"userId",
+        foreignField:"_id",
+        as:"Dealer"
+    }}]) // saving new objet in data base
+        .then((AllNotifications)=> {
+            console.log(AllNotifications)
+                    res.status(200);
+                    res.json({AllNotifications});
+    })
+    .catch(error =>{
+        console.log(error);
+        res.status(501);
+        res.json({msg: "Echec Chargement"});
+    });
+};
+
+exports.GetPayementsHistory = (req, res) =>{
+    const datasQuerys = req.query;
+    console.log(datasQuerys);
+//{DealerId:datasQuerys.userId},
+    modelOfHistory.aggregate([{$match:{DealerId:datasQuerys.userId}},{$lookup:{
+        from:"users",
+        localField:"clientId",
+        foreignField:"_id",
+        as:"client"
+    }}, {$lookup:{
+        from:"users",
+        localField:"AdminId",
+        foreignField:"_id",
+        as:"Admin"
+    }}]) // saving new objet in data base
+        .then((History)=> {
+            console.log(History)
+                    res.status(200);
+                    res.json({Histories:History});
+    })
+    .catch(error =>{
+        console.log(error);
+        res.status(501);
+        res.json({msg: "Echec Chargement"});
+    });
+};
+
+exports.DeleteNotification = (req, res) =>{
+    const datasQuerys = req.body;
+    console.log(datasQuerys);
+
+    modelOfNotification.deleteOne({_id:datasQuerys.id}) // saving new objet in data base
+        .then((AllNotifications)=> {
+            console.log(AllNotifications)
+                    res.status(200);
+                    res.json({AllNotifications});
+    })
+    .catch(error =>{
+        console.log(error);
+        res.status(501);
+        res.json({msg: "Echec Suppression"});
     });
 };

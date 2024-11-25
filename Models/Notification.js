@@ -3,7 +3,7 @@
 const mongoose = require("mongoose");
 const NotificationShema = mongoose.Schema({
     receiverId:{
-        type:String,
+        type:mongoose.Types.ObjectId,
         required:true,
     },
     message:{
@@ -11,12 +11,20 @@ const NotificationShema = mongoose.Schema({
         required:true
     },
     userId:{
+        type:mongoose.Types.ObjectId,
+        required:true
+    },
+    AdminId:{
         type:String,
         required:true
     },
     idCounter:{
         type:Number,
         required:true
+    },
+    createAt:{
+        type:Number,
+        default:Date.now()
     },
 });
 

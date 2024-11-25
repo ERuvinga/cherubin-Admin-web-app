@@ -7,6 +7,10 @@ const CounterShema = mongoose.Schema({
         required:true,
         unique:true,
     },
+    AdminId:{
+        type:String,
+        required:true,
+    },
     socketId:{
         type:String,
         default:null

@@ -3,6 +3,6 @@ const router = require("express").Router();
 const CtrEsp = require("../Controllers/Esp");
 
 router.get("/", CtrEsp.saveEspDatas);
-router.post("/", CtrEsp.saveEspDatas);
+router.post("/notification", CtrEsp.saveEspDatas);
 
 module.exports = router;

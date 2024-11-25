@@ -1,13 +1,18 @@
 //Admin model datas of users
 
 const mongoose = require("mongoose");
+
 const PayementHistoryShema = mongoose.Schema({
     valuePayed:{
         type:Number,
         required:true
     },
     clientId:{
-        type:String,
+        type:mongoose.Types.ObjectId,
+        required:true
+    }, 
+    AdminId:{
+        type:mongoose.Types.ObjectId,
         required:true
     },
     DealerId:{
