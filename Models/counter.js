@@ -33,6 +33,14 @@ const CounterShema = mongoose.Schema({
         type:Number,
         default:0.0
     },
+    TotalCounterValue:{
+        type:Number,
+        default:0.0
+    },
+    TotalPayementValue:{
+        type:Number,
+        default:0.0
+    },
     speedCounter:{
         type:Number,
         default:0.0
