@@ -32,8 +32,7 @@ exports.deleteUser =(req, res)=>{
 
                                 // 3. delete All Counters of Locators
                                 modelOfCounter.deleteMany({AdminId:req.params.id}).then(()=>console.log("Counter of user Admin deleted"))
-                                .then(datas=>{
-                                    console.log(datas);
+                                .then(()=>{
                                     console.log("user and all datas of user deleted");
                                     res.status(200).json("user Deleted");
                                 })
@@ -83,7 +82,6 @@ exports.deleteUser =(req, res)=>{
                         }) 
                         break;
                     };
-
                 }             
             }
             else{
