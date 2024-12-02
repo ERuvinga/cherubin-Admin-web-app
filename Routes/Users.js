@@ -8,5 +8,8 @@ router.delete("/Delete/:id", CtrlUser.deleteUser);
 router.post("/logout", CtrlUser.logout);
 router.post("/NewAppart",  CtrlUser.NewAppartement);
 router.post("/NewPayement",  CtrlUser.Payement);
+router.get("/Notifications",  CtrlUser.GetNotification);
+router.get("/HistoryPayement",  CtrlUser.GetPayementsHistory);
+router.delete("/Notifications",  CtrlUser.DeleteNotification);
 
 module.exports = router;

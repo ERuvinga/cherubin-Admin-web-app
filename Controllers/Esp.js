@@ -11,55 +11,41 @@ exports.saveEspDatas = (req, res) =>{
     console.log(DatasOfForm);
     console.log(reqDatas);
 
-    res.status(200);
-    res.json("Request received");
-    // modelOfCounter.findOne({idCounter:DatasOfForm.idCounter}) // saving new objet in data base
-    //     .then((Counterdatas)=> {
-    //         if(Counterdatas){
-    //             modelOfCounter.updateOne({idCounter:DatasOfForm.idCounter},{
-    //                 $set:{
-    //                     counterValue:Counterdatas.counterValue + DatasOfForm.valuePayed,
-    //                     NewPayemet:true,
-    //                 }
-    //             })
-    //             .then(()=>{
-    //                 console.log(Counterdatas);
-    //                 const newNotification = new modelOfNotification({
-    //                     receiverId:Counterdatas.userId,
-    //                     userId:Counterdatas.userId,
-    //                     idCounter:DatasOfForm.idCounter,
-    //                     message:`Nouvelle recharge de ${DatasOfForm.valuePayed} M3 effectué`
-    //                 }); // created news user with datas of formulaire
-                        
-    //                 const newHistory = new modelOfHistory({
-    //                     valuePayed:DatasOfForm.valuePayed,
-    //                     clientId:Counterdatas.userId,
-    //                     DealerId:DatasOfForm.idDealer,
-    //                     idCounter:DatasOfForm.idCounter,
-    //                 }); // created news user with datas of formulaire
+    modelOfCounter.find() // saving new objet in data base
+        .then((Counterdatas)=> {
+            if(Counterdatas){
 
-    //                 newNotification.save(); // creation Notification
-    //                 newHistory.save(); // creation Historique
-    //                 res.status(200);
-    //                 res.json({message: "'success': payement success"});
-    //             })
-            
-    //             .catch((error)=>{
-    //                 console.log(error);
-    //                 res.status(500).json({msg:"Echec, Error Server"});
-    //             })
-    //         }
+                const responseDatas ={
+                    id:"",
+                    isActive:"",
+                    NewPayemet: "",
+                    counterValue :""
+                };
+                for(i=0; i<Counterdatas.length; i++ ){
+                    console.log(i);
+                    console.log(Counterdatas[i]);
+                    responseDatas.id = i == 0?`${Counterdatas[i].idCounter}`: `${responseDatas.id}~${Counterdatas[i].idCounter}`;
+                    responseDatas.isActive =  i == 0 ?`${Counterdatas[i].isActive  == true? 1:0}`: `${responseDatas.isActive}~${Counterdatas[i].isActive  == true? 1:0}`;
+                    responseDatas.NewPayemet =  i == 0 ?`${Counterdatas[i].NewPayemet == true? 1:0}`: `${responseDatas.NewPayemet}~${Counterdatas[i].NewPayemet  == true? 1:0}`;
+                    responseDatas.counterValue =  i == 0 ?`${Counterdatas[i].counterValue}`: `${responseDatas.counterValue}~${Counterdatas[i].counterValue}`;
+                }
 
-    //         else{
-    //             console.log("identifiant introuvables");
-    //             res.status(404);
-    //             res.json({msg: "Echec: identifiants non trouvés"});
-    //         }
+                console.log({datas:responseDatas});
+                    res.status(200);
+                    res.json(responseDatas);
+            }
+
+            else{
+                console.log("Aucun Compteur");
+                res.status(404);
+                res.json({msg: "Error"});
+            }
             
-    // })
-    // .catch(error =>{
-    //     console.log(error);
-    //     res.status(501);
-    //     res.json({msg: "Echec payement non effectuer"});
-    // });
+    })
+    .catch(error =>{
+        console.log(error);
+        console.log("Aucun Compteur");
+        res.status(500);
+        res.json({msg: "Error"});
+    });
 };

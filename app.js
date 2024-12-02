@@ -13,6 +13,7 @@ const SearchUserRoute = require("./Routes/Users")
 const AppUserRoute = require("./Routes/AppUser")
 const AdminUserRoute = require("./Routes/Admin")
 const EspRoute = require("./Routes/Esp")
+const CounterRoute = require("./Routes/Counter")
 
 app.use(express.json());
 app.use((req, res, next) => {
@@ -31,6 +32,7 @@ app.use("/Admin",AdminUserRoute);
 app.use("/AppUsers", AppUserRoute);
 app.use("/Users",SearchUserRoute);
 app.use("/Esp8266",EspRoute);
+app.use("/Counter",CounterRoute);
 
 
 module.exports = app;
