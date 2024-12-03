@@ -315,6 +315,9 @@ exports.uploadImage =(req, res)=>{
         api_secret:process.env.CLOUDINARY_API_SECRET,
     });
     try{
+        if(req.file.path){
+            throw("path not found");
+        }
         cloudinary.uploader.upload(req.file.path,{
             folder:"image-smartMeter",
             transformation:{width:300, height:300, crop:'limit'}
