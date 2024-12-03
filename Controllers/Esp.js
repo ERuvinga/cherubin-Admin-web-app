@@ -1,5 +1,3 @@
-// nodemailer importing
-const nodemailer = require("nodemailer");
 
 // modelsusers 
 const modelOfCounter = require("../Models/counter"); // import model of Counter
@@ -16,17 +14,13 @@ exports.saveEspDatas = (req, res) =>{
             if(Counterdatas){
 
                 const responseDatas ={
-                    id:"",
                     isActive:"",
-                    NewPayemet: "",
                     counterValue :""
                 };
                 for(i=0; i<Counterdatas.length; i++ ){
                     console.log(i);
                     console.log(Counterdatas[i]);
-                    responseDatas.id = i == 0?`${Counterdatas[i].idCounter}`: `${responseDatas.id}~${Counterdatas[i].idCounter}`;
                     responseDatas.isActive =  i == 0 ?`${Counterdatas[i].isActive  == true? 1:0}`: `${responseDatas.isActive}~${Counterdatas[i].isActive  == true? 1:0}`;
-                    responseDatas.NewPayemet =  i == 0 ?`${Counterdatas[i].NewPayemet == true? 1:0}`: `${responseDatas.NewPayemet}~${Counterdatas[i].NewPayemet  == true? 1:0}`;
                     responseDatas.counterValue =  i == 0 ?`${Counterdatas[i].counterValue}`: `${responseDatas.counterValue}~${Counterdatas[i].counterValue}`;
                 }
 
