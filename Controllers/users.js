@@ -307,8 +307,10 @@ exports.Payement = (req, res) =>{
             if(Counterdatas){
                 modelOfCounter.updateOne({idCounter:DatasOfForm.idCounter},{
                     $set:{
-                        //counterValue:Counterdatas.counterValue + DatasOfForm.valuePayed,
-                        NewPayemet:true,
+                        TotalPayementValue:Counterdatas.TotalPayementValue + DatasOfForm.valuePayed,
+                        counterValue:Counterdatas.counterValue + DatasOfForm.valuePayed,
+                        newPayement:true,
+                        isActive: true,
                     }
                 })
                 .then(()=>{
@@ -324,7 +326,7 @@ exports.Payement = (req, res) =>{
                             AdminId:userDatas.adminID,
                             userId:DealerId,
                             idCounter:DatasOfForm.idCounter,
-                            message:`Cher(e) ${userDatas.fname} ${userDatas.lname}, Une nouvelle recharge de ${DatasOfForm.valuePayed} m3/h vient d'etre effectuer sur votre compteur.`
+                            message:`Cher(e) ${userDatas.fname} ${userDatas.lname}, Une nouvelle recharge de ${DatasOfForm.valuePayed} m3 vient d'etre effectuer sur votre compteur.`
                         }); // create new client Notification 
                             
                         const newNotification_Admin = new modelOfNotification({
@@ -332,7 +334,7 @@ exports.Payement = (req, res) =>{
                             AdminId:userDatas.adminID,
                             userId:DealerId,
                             idCounter:DatasOfForm.idCounter,
-                            message:`Le client ${userDatas.fname} ${userDatas.lname} vient d'effectuer une nouvelle recharge de ${DatasOfForm.valuePayed} m3/h.`
+                            message:`Le client ${userDatas.fname} ${userDatas.lname} vient d'effectuer une nouvelle recharge de ${DatasOfForm.valuePayed} m3.`
                         });
                         
                         // Create a History datas
@@ -387,7 +389,10 @@ exports.GetNotification = (req, res) =>{
         localField:"userId",
         foreignField:"_id",
         as:"Dealer"
-    }}]) // saving new objet in data base
+    }}
+    ,{
+        $sort:{createAt:-1}
+    }]) // saving new objet in data base
         .then((AllNotifications)=> {
             console.log(AllNotifications)
                     res.status(200);
@@ -414,7 +419,9 @@ exports.GetPayementsHistory = (req, res) =>{
         localField:"AdminId",
         foreignField:"_id",
         as:"Admin"
-    }}]) // saving new objet in data base
+    }},{
+        $sort:{createAt: -1}
+    }]) // saving new objet in data base
         .then((History)=> {
             console.log(History)
                     res.status(200);

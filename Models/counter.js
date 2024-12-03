@@ -26,8 +26,8 @@ const CounterShema = mongoose.Schema({
         required:true
     },
     newPayement:{
-        type:Number,
-        default:null
+        type:Boolean,
+        default:false
     },
     counterValue:{
         type:Number,
@@ -49,10 +49,6 @@ const CounterShema = mongoose.Schema({
         type:Boolean,
         default:false
     },
-    NewPayemet:{
-        type:Boolean,
-        default:false
-    }
 });
 
 module.exports = mongoose.model("counter", CounterShema);
