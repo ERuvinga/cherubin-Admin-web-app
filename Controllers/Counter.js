@@ -37,7 +37,7 @@ exports.changeState = (req, res) =>{
                     }
                 }).then(()=>{
                      res.status(200);
-                    res.json({msg: "Counter datas updated"});
+                    res.json({msg: `Counter datas updated status: ${CounterDatas.isActive? "ACTIVE":"DESACTIVE"}`});
                 })
                 .catch(()=>{
                     console.log("Echec mis a jour");
