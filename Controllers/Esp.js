@@ -44,10 +44,6 @@ exports.saveEspDatas = (req, res) =>{
     const valueCounter_1 = reqDatas.water_01/ 1000;
     const valueCounter_2 = reqDatas.water_02 / 1000;
 
-    console.log("Convert datas");// req parameters datas
-    console.log(valueCounter_1);// req parameters datas
-    console.log(valueCounter_2);// req parameters datas
-
     modelOfCounter.find() // saving new objet in data base
         .then((Counterdatas)=> {
             if(Counterdatas.length){
@@ -62,11 +58,11 @@ exports.saveEspDatas = (req, res) =>{
                             $set:{
                                 TotalCounterValue:CounterDatas.TotalCounterValue + valueCounter_1,
                                 counterValue:CounterValue,
-                                isActive: CounterValue > 0.00001
+                                isActive: CounterValue > 0.0002
                             }
                         }).then(()=>{
                             console.log("updating Counter datas 1");
-                            if((CounterValue < 0.0002 ) && CounterDatas.newPayement){
+                            if((CounterValue < 0.0008 ) && CounterDatas.newPayement){
                                 generate_insufficientDatas_Notification(CounterDatas.AdminId, CounterDatas.userId, CounterDatas.idCounter, CounterDatas.email); // create notification
                             }
                         });
@@ -79,11 +75,11 @@ exports.saveEspDatas = (req, res) =>{
                                 $set:{
                                     TotalCounterValue:CounterDatas.TotalCounterValue + valueCounter_1,
                                     counterValue:CounterValue,
-                                    isActive: CounterValue > 0.00001
+                                    isActive: CounterValue > 0.0002
                                 }
                             }).then(()=>{
                                 console.log("updating Counter datas 2");
-                                if((CounterValue < 0.0002 ) && CounterDatas.newPayement){
+                                if((CounterValue < 0.0008 ) && CounterDatas.newPayement){
                                     generate_insufficientDatas_Notification(CounterDatas.AdminId, CounterDatas.userId, CounterDatas.idCounter, CounterDatas.email); // create notification
                                 }
                             });
@@ -98,11 +94,11 @@ exports.saveEspDatas = (req, res) =>{
                             $set:{
                                 TotalCounterValue:CounterDatas.TotalCounterValue + valueCounter_1,
                                 counterValue:CounterValue,
-                                isActive: CounterValue > 0.00001
+                                isActive: CounterValue > 0.0002
                             }
                         }).then(()=>{
                             console.log("updating Counter datas 1");
-                            if((CounterValue < 0.0002 ) && CounterDatas.newPayement){
+                            if((CounterValue < 0.0008 ) && CounterDatas.newPayement){
                                 generate_insufficientDatas_Notification(CounterDatas.AdminId, CounterDatas.userId, CounterDatas.idCounter, CounterDatas.email); // create notification
                             }
                         });
