@@ -44,10 +44,6 @@ exports.saveEspDatas = (req, res) =>{
     const valueCounter_1 = reqDatas.water_01/ 1000;
     const valueCounter_2 = reqDatas.water_02 / 1000;
 
-    console.log("Convert datas");// req parameters datas
-    console.log(valueCounter_1);// req parameters datas
-    console.log(valueCounter_2);// req parameters datas
-
     modelOfCounter.find() // saving new objet in data base
         .then((Counterdatas)=> {
             if(Counterdatas.length){
