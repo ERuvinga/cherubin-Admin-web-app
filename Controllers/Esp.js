@@ -111,8 +111,8 @@ exports.saveEspDatas = (req, res) =>{
                 };
 
                 for(i=0; i<Counterdatas.length; i++ ){
-                    responseDatas.id =  i == 0 ?`${Counterdatas[i].idCounter}`: `${responseDatas.id}~${Counterdatas[i].idCounter}`;
-                    responseDatas.isActive =  i == 0 ?`${Counterdatas[i].isActive}`: `${responseDatas.isActive}~${Counterdatas[i].isActive}`;
+                    responseDatas.id =  i == 0 ?`${Counterdatas[i].idCounter }`: `${responseDatas.id}~${Counterdatas[i].idCounter}`;
+                    responseDatas.isActive =  i == 0 ?`${Counterdatas[i].isActive ? 't':'f'}`: `${responseDatas.isActive}~${Counterdatas[i].isActive ? 't':'f'}`;
                     responseDatas.counterValue =  i == 0 ?`${Math.trunc(Counterdatas[i].counterValue *100000)/100}`: `${responseDatas.counterValue}~${Math.trunc(Counterdatas[i].counterValue * 100000)/100}`;
                 }
 
