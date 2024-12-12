@@ -69,11 +69,11 @@ exports.saveEspDatas = (req, res) =>{
                     }
                         if(valueCounter_2 > 0){
                             const CounterDatas = Counterdatas[1];
-                            const CounterValue = CounterDatas.TotalPayementValue - (CounterDatas.TotalCounterValue + valueCounter_1);
+                            const CounterValue = CounterDatas.TotalPayementValue - (CounterDatas.TotalCounterValue + valueCounter_2);
     
                             modelOfCounter.updateOne({idCounter:CounterDatas.idCounter},{
                                 $set:{
-                                    TotalCounterValue:CounterDatas.TotalCounterValue + valueCounter_1,
+                                    TotalCounterValue:CounterDatas.TotalCounterValue + valueCounter_2,
                                     counterValue:CounterValue,
                                     isActive: CounterValue > 0.0002
                                 }
@@ -112,7 +112,7 @@ exports.saveEspDatas = (req, res) =>{
 
                 for(i=0; i<Counterdatas.length; i++ ){
                     responseDatas.id =  i == 0 ?`${Counterdatas[i].idCounter}`: `${responseDatas.id}~${Counterdatas[i].idCounter}`;
-                    responseDatas.isActive =  i == 0 ?`${Counterdatas[i].isActive  == true? 1:0}`: `${responseDatas.isActive}~${Counterdatas[i].isActive  == true? 1:0}`;
+                    responseDatas.isActive =  i == 0 ?`${Counterdatas[i].isActive}`: `${responseDatas.isActive}~${Counterdatas[i].isActive}`;
                     responseDatas.counterValue =  i == 0 ?`${Math.trunc(Counterdatas[i].counterValue *100000)/100}`: `${responseDatas.counterValue}~${Math.trunc(Counterdatas[i].counterValue * 100000)/100}`;
                 }
 
